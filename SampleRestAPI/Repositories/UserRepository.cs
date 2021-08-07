@@ -1,6 +1,6 @@
-﻿using ForceOne.Data;
+﻿using SampleRestAPI.Data;
 
-namespace ForceOne.Repositories
+namespace SampleRestAPI.Repositories
 {
     public class UserRepository
     {

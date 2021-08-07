@@ -1,8 +1,8 @@
-﻿using ForceOne.Models;
+﻿using SampleRestAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ForceOne.Data.Mapping
+namespace SampleRestAPI.Data.Mapping
 {
     public class PersonMapping : IEntityTypeConfiguration<Person>
     {

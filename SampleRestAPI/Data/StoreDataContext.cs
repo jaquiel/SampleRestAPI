@@ -1,12 +1,12 @@
-﻿using ForceOne.Data.Mapping;
-using ForceOne.Models;
+﻿using SampleRestAPI.Data.Mapping;
+using SampleRestAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ForceOne.Data
+namespace SampleRestAPI.Data
 {
     public class StoreDataContext : DbContext
     {

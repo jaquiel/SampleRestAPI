@@ -1,11 +1,11 @@
-﻿using ForceOne.Data;
-using ForceOne.Models;
+﻿using SampleRestAPI.Data;
+using SampleRestAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ForceOne.Controllers
+namespace SampleRestAPI.Controllers
 {
     public class PersonController : Controller
     {
