@@ -1,16 +1,18 @@
-﻿using SampleRestAPI.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using MongoDB.Driver;
+using SampleRestAPI.Models;
 
 namespace SampleRestAPI.Data.Mapping
 {
-    public class PersonMapping : IEntityTypeConfiguration<Person>
+    public class PersonMapping
     {
-        public void Configure(EntityTypeBuilder<Person> builder)
+
+        private IMongoDatabase _database { get; }
+
+        public PersonMapping(IMongoDatabase database)
         {
-            builder.HasKey(x => x.ID);
-            builder.Property(x => x.ID).ValueGeneratedOnAdd();
-            builder.Property(x => x.Name).IsRequired().HasMaxLength(10);
+            _database = database;
         }
+
+        
     }
 }

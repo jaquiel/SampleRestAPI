@@ -1,11 +1,11 @@
 using SampleRestAPI.Data;
-using SampleRestAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using SampleRestAPI.Controllers;
 
 namespace SampleRestAPI
 {
@@ -21,12 +21,17 @@ namespace SampleRestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddDbContext<AppDbContext>(options =>
-            //     options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            services.Configure<MongoDBSettings>(Configuration.GetSection(nameof(MongoDBSettings)));
+
+            services.AddSingleton<IMongoDBSettings>(sp =>
+                sp.GetRequiredService<IOptions<MongoDBSettings>>().Value);
+
+            services.AddSingleton<PersonController>();
+
+            //services.AddScoped<StoreDataContext, StoreDataContext>();
 
             services.AddControllers();
 
-            services.AddScoped<StoreDataContext, StoreDataContext>();
 
             services.AddSwaggerGen(options =>
             {

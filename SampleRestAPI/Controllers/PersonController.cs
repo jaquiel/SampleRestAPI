@@ -1,36 +1,38 @@
 ﻿using SampleRestAPI.Data;
 using SampleRestAPI.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Driver;
+using System;
 
 namespace SampleRestAPI.Controllers
 {
     public class PersonController : Controller
     {
-        private readonly StoreDataContext _context;
+        private StoreDataContext _context { get; }
 
-        public PersonController(StoreDataContext context)
+        public PersonController(IMongoDBSettings settings)
         {
-            _context = context;
+            IMongoClient   client = new MongoClient(settings.ConnectionString);
+            IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
+            _context = new StoreDataContext(database);
         }
 
         [Route("v1/persons")]
         [HttpGet]
-        public IEnumerable<Person> Get() => _context.Persons.AsNoTracking().ToList();
+        public List<Person> Get() => _context.Person.Find(p => true).ToList<Person>();
+
 
         [Route("v1/persons/{id:int}")]
         [HttpGet]
-        public Person Get(int id) => _context.Persons.AsNoTracking().Where(x => x.ID == id).FirstOrDefault();
+        public Person Get(string id) => _context.Person.Find<Person>(p => p.ID == id).FirstOrDefault();
 
         [Route("v1/persons")]
         [HttpPost]
         public Person Post([FromBody] Person person)
         {
-            _context.Persons.Add(person);
-            _context.SaveChanges();
-
+            _context.Person.InsertOne(person);
             return person;
         }
 
@@ -38,9 +40,7 @@ namespace SampleRestAPI.Controllers
         [HttpPut]
         public Person Put([FromBody] Person person)
         {
-            _context.Entry<Person>(person).State = EntityState.Modified;
-            _context.SaveChanges();
-
+            _context.Person.ReplaceOne(p => p.ID == person.ID, person);
             return person;
         }
 
@@ -48,8 +48,7 @@ namespace SampleRestAPI.Controllers
         [HttpDelete]
         public Person Delete([FromBody] Person person)
         {
-            _context.Persons.Remove(person);
-            _context.SaveChanges();
+            _context.Person.DeleteOne(p => p.ID == person.ID );
 
             return person;
         }

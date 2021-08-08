@@ -1,26 +1,24 @@
-﻿using SampleRestAPI.Data.Mapping;
+﻿using MongoDB.Driver;
 using SampleRestAPI.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SampleRestAPI.Data
 {
-    public class StoreDataContext : DbContext
+    public class StoreDataContext
     {
-        public DbSet<Person> Persons { get; set; }
 
+        private IMongoDatabase _database { get; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public StoreDataContext(IMongoDatabase database)
         {
-            optionsBuilder.UseInMemoryDatabase("Sekeleton");
+            _database = database;
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        public IMongoCollection<Person> Person
         {
-            builder.ApplyConfiguration(new PersonMapping());
+            get
+            {
+                return _database.GetCollection<Person>("Person");
+            }
         }
 
     }
