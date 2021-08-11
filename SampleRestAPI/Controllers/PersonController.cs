@@ -4,54 +4,76 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using SampleRestAPI.Repositories;
 
 namespace SampleRestAPI.Controllers
 {
-    public class PersonController : Controller
+    public class PersonController : ControllerBase
     {
-        private readonly StoreDataContext _context;
+        private readonly PersonRepository _personRepository;
 
-        public PersonController(StoreDataContext context)
+        public PersonController(PersonRepository personRepository)
         {
-            _context = context;
+            _personRepository = personRepository;
         }
 
         [Route("v1/persons")]
         [HttpGet]
-        public IEnumerable<Person> Get() => _context.Persons.AsNoTracking().ToList();
+        public ActionResult<List<Person>> Get() => _personRepository.Get();
 
         [Route("v1/persons/{id:int}")]
         [HttpGet]
-        public Person Get(int id) => _context.Persons.AsNoTracking().Where(x => x.ID == id).FirstOrDefault();
+        public ActionResult<Person> Get(int id)
+        {
+            Person person = _personRepository.Get(id);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            return person;
+        }
 
         [Route("v1/persons")]
         [HttpPost]
-        public Person Post([FromBody] Person person)
+        public ActionResult<Person> Post([FromBody] Person person)
         {
-            _context.Persons.Add(person);
-            _context.SaveChanges();
+            Person p = _personRepository.Post(person);
 
-            return person;
+            return p;
         }
 
         [Route("v1/persons")]
         [HttpPut]
-        public Person Put([FromBody] Person person)
+        public IActionResult Put([FromBody] Person person)
         {
-            _context.Entry<Person>(person).State = EntityState.Modified;
-            _context.SaveChanges();
+            Person p = _personRepository.Get(person.ID);
 
-            return person;
+            if (p == null)
+            {
+                NotFound();
+            }
+
+            _personRepository.Put(p);
+
+            return NoContent();
         }
 
         [Route("v1/persons")]
         [HttpDelete]
-        public Person Delete([FromBody] Person person)
+        public IActionResult Delete([FromBody] Person person)
         {
-            _context.Persons.Remove(person);
-            _context.SaveChanges();
+            Person p = _personRepository.Get(person.ID);
 
-            return person;
+            if (p == null)
+            {
+                NotFound();
+            }
+
+            _personRepository.Delete(p);
+
+            return NoContent();
         }
     }
 }
